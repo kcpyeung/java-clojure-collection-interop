@@ -6,3 +6,15 @@
   (testing "conversion from a java.util.HashMap to a clojure hashmap"
     (let [java-map (new java.util.HashMap)]
       (is (= (type {}) (type (to-clojure java-map)))))))
+
+(deftest convert-java-hashmap-keys-to-keywords
+  (testing "conversion of map keys from strings to keywords"
+    (let [java-map (new java.util.HashMap)]
+      (.put java-map "hello" "world")
+      (is (= "world" (:hello (to-clojure java-map)))))))
+
+(deftest new-clojure-map-has-no-string-keys
+  (testing "original string keys in java map are not preserved"
+    (let [java-map (new java.util.HashMap)]
+      (.put java-map "hello" "world")
+      (is (= false (contains? (to-clojure java-map) "hello"))))))

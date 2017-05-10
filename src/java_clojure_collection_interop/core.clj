@@ -2,5 +2,8 @@
 
 (defn to-clojure
   "Converts Java Map to Clojure Associative"
-  [coll]
-  (into {} coll))
+  [m]
+  (->> m
+    keys
+    (map (fn [k] [(keyword k) (.get m k)]))
+    (into {})))
