@@ -18,3 +18,15 @@
     (let [java-map (new java.util.HashMap)]
       (.put java-map "hello" "world")
       (is (= false (contains? (to-clojure java-map) "hello"))))))
+
+(deftest maps-are-converted-recursively
+  (testing "java maps within java maps are converted"
+    (let [outer-map (new java.util.HashMap)
+          inner-map (new java.util.HashMap)]
+      (.put inner-map "hello" "world")
+      (.put outer-map "inner" inner-map)
+      (is (= "world" (->> outer-map to-clojure :inner :hello)))
+      (is (instance? clojure.lang.Associative (->> outer-map to-clojure :inner)))
+      )))
+
+(run-tests)
