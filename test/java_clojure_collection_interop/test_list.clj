@@ -19,4 +19,23 @@
         (is (= 20 (nth v 1)))
         (is (= 30 (nth v 2)))))))
 
+(deftest nested-lists-are-converted
+  (testing "lists within list are converted"
+    (let [outer-list (new java.util.ArrayList)
+          inner-list1 (new java.util.ArrayList)
+          inner-list2 (new java.util.ArrayList)
+          inner-list3 (new java.util.ArrayList)]
+      (.add outer-list inner-list1)
+      (.add outer-list inner-list2)
+      (.add outer-list "hello")
+      (.add inner-list2 inner-list3)
+      (.add inner-list3 "world")
+      (let [v (to-clojure outer-list)]
+        (is (instance? clojure.lang.PersistentVector (nth v 0)))
+        (is (= [] (nth v 0)))
+        (is (instance? clojure.lang.PersistentVector (nth v 1)))
+        (is (instance? clojure.lang.PersistentVector (nth (nth v 1) 0)))
+        (is (= [["world"]] (nth v 1)))
+        (is (= "hello" (nth v 2)))))))
+
 (run-tests)

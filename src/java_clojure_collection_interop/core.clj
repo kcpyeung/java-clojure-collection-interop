@@ -22,7 +22,11 @@
         (into clj-map)))))
 
 (defn- process-list [java-list]
-  (into [] java-list))
+  (letfn [(process-list-item [item]
+            (if (instance? java.util.AbstractList item)
+              (process-list item)
+              item))]
+    (into [] (map process-list-item java-list))))
 
 (defn to-clojure [coll]
   (if (instance? java.util.AbstractMap coll)
