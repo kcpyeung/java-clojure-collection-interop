@@ -26,7 +26,6 @@
       (.put inner-map "hello" "world")
       (.put outer-map "inner" inner-map)
       (is (= "world" (->> outer-map to-clojure :inner :hello)))
-      (is (instance? clojure.lang.Associative (->> outer-map to-clojure :inner)))
-      )))
+      (is (instance? clojure.lang.Associative (->> outer-map to-clojure :inner))))))
 
 (run-tests)
