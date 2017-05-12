@@ -7,4 +7,16 @@
     (let [java-list (new java.util.ArrayList)]
       (is (= (type []) (type (to-clojure java-list)))))))
 
+(deftest conversion-preserves-contents
+  (testing "contents inside the list are preserved"
+    (let [java-list (new java.util.ArrayList)]
+      (.add java-list 10)
+      (.add java-list 20)
+      (.add java-list 30)
+      (let [v (to-clojure java-list)]
+        (is (= 3 (count v)))
+        (is (= 10 (nth v 0)))
+        (is (= 20 (nth v 1)))
+        (is (= 30 (nth v 2)))))))
+
 (run-tests)
