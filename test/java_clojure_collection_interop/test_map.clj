@@ -1,4 +1,4 @@
-(ns java-clojure-collection-interop.test-hashmap
+(ns java-clojure-collection-interop.test-map
   (:require [clojure.test :refer :all]
             [java-clojure-collection-interop.core :refer :all]))
 
