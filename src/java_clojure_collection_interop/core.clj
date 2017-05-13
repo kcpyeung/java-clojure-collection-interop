@@ -26,7 +26,9 @@
             (if (instance? java.util.AbstractList item)
               (process-list item)
               item))]
-    (into [] (map process-list-item java-list))))
+    (->> java-list
+      (map process-list-item)
+      (into []))))
 
 (defn to-clojure [coll]
   (if (instance? java.util.AbstractMap coll)
