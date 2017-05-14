@@ -38,4 +38,26 @@
         (is (= [["world"]] (nth v 1)))
         (is (= "hello" (nth v 2)))))))
 
+(deftest list-of-maps-are-converted
+  (testing "maps inside lists are converted"
+    (let [list (new java.util.ArrayList)
+          inner-list (new java.util.ArrayList)
+          map (new java.util.HashMap)
+          inner-map (new java.util.HashMap)]
+      (.put map "hello" "world")
+      (.add list map)
+      (.put inner-map "byebye" "for now")
+      (.add inner-list inner-map)
+      (.put map "my-list" inner-list)
+      (let [v (to-clojure list)
+            m (nth v 0)]
+        (is (instance? clojure.lang.PersistentVector v))
+        (is (instance? clojure.lang.Associative m))
+        (is (= "world" (:hello m)))
+        (let [il (:my-list m)
+              im (nth il 0)]
+          (is (instance? clojure.lang.PersistentVector il))
+          (is (instance? clojure.lang.Associative im))
+          (is (= "for now" (:byebye im))))))))
+
 (run-tests)
