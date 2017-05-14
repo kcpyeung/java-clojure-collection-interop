@@ -33,7 +33,7 @@
     (let [m (new java.util.HashMap)
           thingumajigs (new java.util.ArrayList)
           inner-map (new java.util.HashMap)]
-      (.put inner-map "i am" "hiding")
+      (.put inner-map "i-am" "hiding")
       (.add thingumajigs 1)
       (.add thingumajigs 2)
       (.add thingumajigs inner-map)
@@ -41,9 +41,12 @@
       (.put m "things" thingumajigs)
       (let [clj-map (to-clojure m)]
         (is (instance? clojure.lang.PersistentVector (:things clj-map)))
-        (let [things (:things clj-map)]
+        (let [things (:things clj-map)
+              inner (nth things 2)]
           (is (= 4 (count things)))
           (is (= 1 (nth things 0)))
-          (is (= 3 (nth things 3))))))))
+          (is (= 3 (nth things 3)))
+          (is (instance? clojure.lang.Associative inner))
+          (is (= "hiding" (:i-am inner))))))))
 
 (run-tests)

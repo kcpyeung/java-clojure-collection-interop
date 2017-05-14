@@ -18,11 +18,13 @@
       (map process-map-item)
       (into {}))))
 
-(defn- process-list [java-list]
+(defn process-list [java-list]
   (letfn [(process-list-item [item]
             (if (instance? java.util.AbstractList item)
               (process-list item)
-              item))]
+              (if (instance? java.util.AbstractMap item)
+                (process-map item)
+                item)))]
     (->> java-list
       (map process-list-item)
       (into []))))
