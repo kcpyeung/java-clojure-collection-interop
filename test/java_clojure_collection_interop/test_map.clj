@@ -28,4 +28,22 @@
       (is (= "world" (->> outer-map to-clojure :inner :hello)))
       (is (instance? clojure.lang.Associative (->> outer-map to-clojure :inner))))))
 
+(deftest recursive-list-of-maps-conversion
+  (testing "java maps inside a list"
+    (let [m (new java.util.HashMap)
+          thingumajigs (new java.util.ArrayList)
+          inner-map (new java.util.HashMap)]
+      (.put inner-map "i am" "hiding")
+      (.add thingumajigs 1)
+      (.add thingumajigs 2)
+      (.add thingumajigs inner-map)
+      (.add thingumajigs 3)
+      (.put m "things" thingumajigs)
+      (let [clj-map (to-clojure m)]
+        (is (instance? clojure.lang.PersistentVector (:things clj-map)))
+        (let [things (:things clj-map)]
+          (is (= 4 (count things)))
+          (is (= 1 (nth things 0)))
+          (is (= 3 (nth things 3))))))))
+
 (run-tests)

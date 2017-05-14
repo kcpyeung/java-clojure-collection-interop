@@ -1,10 +1,14 @@
 (ns java-clojure-collection-interop.core)
 
+(declare process-list)
+
 (defn process-map [java-map]
   (letfn [(process-map-item [kv]
             (if (instance? java.util.AbstractMap (second kv))
               [(first kv) (process-map (second kv))]
-              kv))
+              (if (instance? java.util.AbstractList (second kv))
+                [(first kv) (process-list (second kv))]
+                kv)))
           (to-kvs [java-map]
             (->> java-map
               keys
