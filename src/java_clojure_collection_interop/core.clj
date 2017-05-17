@@ -2,11 +2,14 @@
 
 (declare process-list)
 
+(def is-map? (partial instance? java.util.AbstractMap))
+(def is-list? (partial instance? java.util.AbstractList))
+
 (defn process-map [java-map]
   (letfn [(process-map-item [kv]
-            (if (instance? java.util.AbstractMap (second kv))
+            (if (is-map? (second kv))
               [(first kv) (process-map (second kv))]
-              (if (instance? java.util.AbstractList (second kv))
+              (if (is-list? (second kv))
                 [(first kv) (process-list (second kv))]
                 kv)))
           (to-kvs [java-map]
@@ -20,9 +23,9 @@
 
 (defn process-list [java-list]
   (letfn [(process-list-item [item]
-            (if (instance? java.util.AbstractList item)
+            (if (is-list? item)
               (process-list item)
-              (if (instance? java.util.AbstractMap item)
+              (if (is-map? item)
                 (process-map item)
                 item)))]
     (->> java-list
@@ -30,7 +33,7 @@
       (into []))))
 
 (defn to-clojure [coll]
-  (if (instance? java.util.AbstractMap coll)
+  (if (is-map? coll)
     (process-map coll)
-    (if (instance? java.util.AbstractList coll)
+    (if (is-list? coll)
       (process-list coll))))
