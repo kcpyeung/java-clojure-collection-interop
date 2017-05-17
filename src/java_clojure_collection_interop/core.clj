@@ -32,8 +32,8 @@
       (map process-list-item)
       (into []))))
 
-(defn to-clojure [coll]
-  (if (is-map? coll)
-    (process-map coll)
-    (if (is-list? coll)
-      (process-list coll))))
+(defn to-clojure [thing]
+  (cond
+    (is-map? thing) (process-map thing)
+    (is-list? thing) (process-list thing)
+    :default thing))
