@@ -7,11 +7,10 @@
 
 (defn process-map [java-map]
   (letfn [(process-map-item [kv]
-            (if (is-map? (second kv))
-              [(first kv) (process-map (second kv))]
-              (if (is-list? (second kv))
-                [(first kv) (process-list (second kv))]
-                kv)))
+            (cond
+              (is-map? (second kv)) [(first kv) (process-map (second kv))]
+              (is-list? (second kv)) [(first kv) (process-list (second kv))]
+              :default kv))
           (to-kvs [java-map]
             (->> java-map
               keys
@@ -23,11 +22,10 @@
 
 (defn process-list [java-list]
   (letfn [(process-list-item [item]
-            (if (is-list? item)
-              (process-list item)
-              (if (is-map? item)
-                (process-map item)
-                item)))]
+            (cond
+              (is-list? item) (process-list item)
+              (is-map? item) (process-map item)
+              :default item))]
     (->> java-list
       (map process-list-item)
       (into []))))
