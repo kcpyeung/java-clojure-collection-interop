@@ -50,7 +50,13 @@
          (into {}))))
 
 (defn to-java-list [clojure-list]
-  (new java.util.ArrayList clojure-list))
+  (letfn [(process-list-item [item]
+            (cond
+              (is-clojure-list-or-vector? item) (to-java-list item)
+              :default item))]
+    (->> clojure-list
+         (map process-list-item)
+         (new java.util.ArrayList))))
 
 (defn to-java [thing]
   (cond

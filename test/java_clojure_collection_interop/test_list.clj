@@ -13,7 +13,17 @@
         (is (= 3 (.size v)))
         (is (= 10 (.get v 0)))
         (is (= 20 (.get v 1)))
-        (is (= 30 (.get v 2)))))))
+        (is (= 30 (.get v 2))))))
+
+  (testing "lists within list are converted"
+    (let [clojure-list [ [] '(["world"]) "hello" ]
+          v (to-java clojure-list)]
+        (is (instance? java.util.ArrayList (nth v 0)))
+        (is (empty? (nth v 0)))
+        (is (instance? java.util.ArrayList (nth v 1)))
+        (is (instance? java.util.ArrayList (nth (nth v 1) 0)))
+        (is (= "world" (nth (nth (nth v 1) 0) 0)))
+        (is (= "hello" (nth v 2))))))
 
 (deftest java-to-clojure
   (testing "conversion from a java.util.ArrayList to a clojure vector"
