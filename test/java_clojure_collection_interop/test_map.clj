@@ -9,7 +9,20 @@
 
   (testing "conversion of map keys from strings to keywords"
     (let [clojure-map {:hello "world"}]
-      (is (= "world" (.get (to-java clojure-map) "hello"))))))
+      (is (= "world" (.get (to-java clojure-map) "hello")))))
+
+  (testing "original keyword keys in clojure map are not preserved"
+    (let [clojure-map {:hello "world"}]
+      (is (= false (contains? (to-java clojure-map) :hello)))))
+
+  (testing "clojure maps within clojure maps are converted"
+    (let [inner-map {:hello "world"}
+          outer-map {:inner inner-map}]
+      (let [converted-outer-map (to-java outer-map)
+            converted-inner-map (.get converted-outer-map "inner")
+            inner-value (.get converted-inner-map "hello")]
+      (is (= "world" inner-value))
+      (is (instance? java.util.Map converted-inner-map))))))
 
 (deftest java-to-clojure
   (testing "conversion from a java.util.HashMap to a clojure hashmap"

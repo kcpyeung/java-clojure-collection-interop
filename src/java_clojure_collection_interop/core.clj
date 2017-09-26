@@ -39,10 +39,14 @@
     :default thing))
 
 (defn- to-java-map [clojure-map]
-  (->> clojure-map
-       seq
-       (map #(vector (name (first %)) (second %)))
-       (into {})))
+  (letfn [(process-map-item [[k v]]
+            (cond
+              (is-clojure-map? v) [(name k) (to-java-map v)]
+              :default [(name k) v]))]
+    (->> clojure-map
+         seq
+         (map process-map-item)
+         (into {}))))
 
 (defn to-java [thing]
   (cond
