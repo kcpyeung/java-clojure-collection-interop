@@ -2,6 +2,15 @@
   (:require [clojure.test :refer :all]
             [java-clojure-collection-interop.core :refer :all]))
 
+(deftest clojure-to-java
+  (testing "conversion from a clojure hashmap to a java.util.HashMap"
+    (let [clojure-map {}]
+      (is (instance? java.util.Map (to-java clojure-map)))))
+
+  (testing "conversion of map keys from strings to keywords"
+    (let [clojure-map {:hello "world"}]
+      (is (= "world" (.get (to-java clojure-map) "hello"))))))
+
 (deftest java-to-clojure
   (testing "conversion from a java.util.HashMap to a clojure hashmap"
     (let [java-map (new java.util.HashMap)]
