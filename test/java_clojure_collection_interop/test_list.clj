@@ -2,12 +2,11 @@
   (:require [clojure.test :refer :all]
             [java-clojure-collection-interop.core :refer :all]))
 
-(deftest convert-java-list-to-clj-vector
+(deftest java-to-clojure
   (testing "conversion from a java.util.ArrayList to a clojure vector"
     (let [java-list (new java.util.ArrayList)]
-      (is (= (type []) (type (to-clojure java-list)))))))
+      (is (= (type []) (type (to-clojure java-list))))))
 
-(deftest conversion-preserves-contents
   (testing "contents inside the list are preserved"
     (let [java-list (new java.util.ArrayList)]
       (.add java-list 10)
@@ -17,9 +16,8 @@
         (is (= 3 (count v)))
         (is (= 10 (nth v 0)))
         (is (= 20 (nth v 1)))
-        (is (= 30 (nth v 2)))))))
+        (is (= 30 (nth v 2))))))
 
-(deftest nested-lists-are-converted
   (testing "lists within list are converted"
     (let [outer-list (new java.util.ArrayList)
           inner-list1 (new java.util.ArrayList)
@@ -36,9 +34,8 @@
         (is (instance? clojure.lang.PersistentVector (nth v 1)))
         (is (instance? clojure.lang.PersistentVector (nth (nth v 1) 0)))
         (is (= [["world"]] (nth v 1)))
-        (is (= "hello" (nth v 2)))))))
+        (is (= "hello" (nth v 2))))))
 
-(deftest list-of-maps-are-converted
   (testing "maps inside lists are converted"
     (let [list (new java.util.ArrayList)
           inner-list (new java.util.ArrayList)
