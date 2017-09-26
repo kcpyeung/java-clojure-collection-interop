@@ -8,10 +8,10 @@
 (def is-clojure-map? (partial associative?))
 
 (defn- to-clojure-map [java-map]
-  (letfn [(process-map-item [kv]
+  (letfn [(process-map-item [[k v :as kv]]
             (cond
-              (is-java-map? (second kv)) [(first kv) (to-clojure-map (second kv))]
-              (is-java-list? (second kv)) [(first kv) (to-clojure-list (second kv))]
+              (is-java-map? v) [k (to-clojure-map v)]
+              (is-java-list? v) [k (to-clojure-list v)]
               :default kv))
           (to-kvs [java-map]
             (->> java-map
