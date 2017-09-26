@@ -4,8 +4,16 @@
 
 (deftest clojure-to-java
   (testing "conversion from a clojure vector to a java.util.ArrayList"
-    (is (instance? java.util.List (to-java [1])))
-    (is (instance? java.util.List (to-java '(2))))))
+    (is (instance? java.util.ArrayList (to-java [1])))
+    (is (instance? java.util.ArrayList (to-java '(2)))))
+
+  (testing "contents inside the list are preserved"
+    (let [clojure-list [10 20 30]]
+      (let [v (to-java clojure-list)]
+        (is (= 3 (.size v)))
+        (is (= 10 (.get v 0)))
+        (is (= 20 (.get v 1)))
+        (is (= 30 (.get v 2)))))))
 
 (deftest java-to-clojure
   (testing "conversion from a java.util.ArrayList to a clojure vector"
