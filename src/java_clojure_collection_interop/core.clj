@@ -5,7 +5,8 @@
 (def is-java-map? (partial instance? java.util.AbstractMap))
 (def is-java-list? (partial instance? java.util.AbstractList))
 
-(def is-clojure-map? (partial associative?))
+(def is-clojure-map? (partial map?))
+(defn is-clojure-list-or-vector? [thing] (or (list? thing) (vector? thing)))
 
 (defn- to-clojure-map [java-map]
   (letfn [(process-map-item [[k v :as kv]]
@@ -48,7 +49,11 @@
          (map process-map-item)
          (into {}))))
 
+(defn to-java-list [clojure-list]
+  (new java.util.ArrayList clojure-list))
+
 (defn to-java [thing]
   (cond
     (is-clojure-map? thing) (to-java-map thing)
+    (is-clojure-list-or-vector? thing) (to-java-list thing)
     :default thing))

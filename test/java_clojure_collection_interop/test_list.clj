@@ -2,6 +2,11 @@
   (:require [clojure.test :refer :all]
             [java-clojure-collection-interop.core :refer :all]))
 
+(deftest clojure-to-java
+  (testing "conversion from a clojure vector to a java.util.ArrayList"
+    (is (instance? java.util.List (to-java [1])))
+    (is (instance? java.util.List (to-java '(2))))))
+
 (deftest java-to-clojure
   (testing "conversion from a java.util.ArrayList to a clojure vector"
     (let [java-list (new java.util.ArrayList)]
