@@ -1,15 +1,15 @@
 (ns java-clojure-collection-interop.core)
 
-(declare process-list)
+(declare to-clojure-list)
 
-(def is-map? (partial instance? java.util.AbstractMap))
-(def is-list? (partial instance? java.util.AbstractList))
+(def is-java-map? (partial instance? java.util.AbstractMap))
+(def is-java-list? (partial instance? java.util.AbstractList))
 
-(defn process-map [java-map]
+(defn- to-clojure-map [java-map]
   (letfn [(process-map-item [kv]
             (cond
-              (is-map? (second kv)) [(first kv) (process-map (second kv))]
-              (is-list? (second kv)) [(first kv) (process-list (second kv))]
+              (is-java-map? (second kv)) [(first kv) (to-clojure-map (second kv))]
+              (is-java-list? (second kv)) [(first kv) (to-clojure-list (second kv))]
               :default kv))
           (to-kvs [java-map]
             (->> java-map
@@ -20,11 +20,11 @@
       (map process-map-item)
       (into {}))))
 
-(defn process-list [java-list]
+(defn- to-clojure-list [java-list]
   (letfn [(process-list-item [item]
             (cond
-              (is-list? item) (process-list item)
-              (is-map? item) (process-map item)
+              (is-java-list? item) (to-clojure-list item)
+              (is-java-map? item) (to-clojure-map item)
               :default item))]
     (->> java-list
       (map process-list-item)
@@ -32,6 +32,6 @@
 
 (defn to-clojure [thing]
   (cond
-    (is-map? thing) (process-map thing)
-    (is-list? thing) (process-list thing)
+    (is-java-map? thing) (to-clojure-map thing)
+    (is-java-list? thing) (to-clojure-list thing)
     :default thing))
