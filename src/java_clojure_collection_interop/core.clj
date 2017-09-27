@@ -52,7 +52,7 @@
          (into {})
          (new java.util.HashMap))))
 
-(defn to-java-list [clojure-list]
+(defn- to-java-list [clojure-list]
   (letfn [(process-list-item [item]
             (cond
               (is-clojure-list-or-vector? item) (to-java-list item)

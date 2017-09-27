@@ -21,8 +21,20 @@
       (let [converted-outer-map (to-java outer-map)
             converted-inner-map (.get converted-outer-map "inner")
             inner-value (.get converted-inner-map "hello")]
-      (is (= "world" inner-value))
-      (is (instance? java.util.Map converted-inner-map))))))
+        (is (= "world" inner-value))
+        (is (instance? java.util.Map converted-inner-map)))))
+
+  (testing "clojure maps inside a list"
+    (let [m {:things [1 2 {:i-am "hiding"} 3]}
+          java-map (to-java m)
+          things (.get java-map "things")
+          inner (.get things 2)]
+      (is (instance? java.util.ArrayList things))
+      (is (= 4 (.size things)))
+      (is (= 1 (.get things 0)))
+      (is (= 3 (.get things 3)))
+      (is (instance? java.util.HashMap inner))
+      (is (= "hiding" (.get inner "i-am"))))))
 
 (deftest java-to-clojure
   (testing "conversion from a java.util.HashMap to a clojure hashmap"
