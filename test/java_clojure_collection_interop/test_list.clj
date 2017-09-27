@@ -8,22 +8,35 @@
     (is (instance? java.util.ArrayList (to-java '(2)))))
 
   (testing "contents inside the list are preserved"
-    (let [clojure-list [10 20 30]]
-      (let [v (to-java clojure-list)]
-        (is (= 3 (.size v)))
-        (is (= 10 (.get v 0)))
-        (is (= 20 (.get v 1)))
-        (is (= 30 (.get v 2))))))
+    (let [clojure-list [10 20 30]
+          v (to-java clojure-list)]
+      (is (= 3 (.size v)))
+      (is (= 10 (.get v 0)))
+      (is (= 20 (.get v 1)))
+      (is (= 30 (.get v 2)))))
 
   (testing "lists within list are converted"
-    (let [clojure-list [ [] '(["world"]) "hello" ]
+    (let [clojure-list [[] '(["world"]) "hello"]
           v (to-java clojure-list)]
-        (is (instance? java.util.ArrayList (nth v 0)))
-        (is (empty? (nth v 0)))
-        (is (instance? java.util.ArrayList (nth v 1)))
-        (is (instance? java.util.ArrayList (nth (nth v 1) 0)))
-        (is (= "world" (nth (nth (nth v 1) 0) 0)))
-        (is (= "hello" (nth v 2))))))
+      (is (instance? java.util.ArrayList (.get v 0)))
+      (is (empty? (.get v 0)))
+      (is (instance? java.util.ArrayList (.get v 1)))
+      (is (instance? java.util.ArrayList (.get (.get v 1) 0)))
+      (is (= "world" (.get (.get (.get v 1) 0) 0)))
+      (is (= "hello" (.get v 2)))))
+
+  (testing "maps inside lists are converted"
+    (let [clojure-list '({:hello "world", :my-list [{:byebye "for now"}]})
+          v (to-java clojure-list)
+          m (.get v 0)]
+      (is (instance? java.util.ArrayList v))
+      (is (instance? java.util.Map m))
+      (is (= "world" (.get m "hello")))
+      (let [il (.get m "my-list")
+            im (.get il 0)]
+        (is (instance? java.util.ArrayList il))
+        (is (instance? java.util.Map im))
+        (is (= "for now" (.get im "byebye")))))))
 
 (deftest java-to-clojure
   (testing "conversion from a java.util.ArrayList to a clojure vector"

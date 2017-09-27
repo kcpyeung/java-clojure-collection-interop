@@ -1,6 +1,7 @@
 (ns java-clojure-collection-interop.core)
 
 (declare to-clojure-list)
+(declare to-java-list)
 
 (def is-java-map? (partial instance? java.util.AbstractMap))
 (def is-java-list? (partial instance? java.util.AbstractList))
@@ -43,16 +44,19 @@
   (letfn [(process-map-item [[k v]]
             (cond
               (is-clojure-map? v) [(name k) (to-java-map v)]
+              (is-clojure-list-or-vector? v) [(name k) (to-java-list v)]
               :default [(name k) v]))]
     (->> clojure-map
          seq
          (map process-map-item)
-         (into {}))))
+         (into {})
+         (new java.util.HashMap))))
 
 (defn to-java-list [clojure-list]
   (letfn [(process-list-item [item]
             (cond
               (is-clojure-list-or-vector? item) (to-java-list item)
+              (is-clojure-map? item) (to-java-map item)
               :default item))]
     (->> clojure-list
          (map process-list-item)
