@@ -37,6 +37,10 @@
       (is (= "hiding" (.get inner "i-am"))))))
 
 (deftest java-to-clojure
+  (testing "keys are converted to keywords inside clojure.lang.PersistentHashMap"
+    (let [clojure-map {"hello" "world", "age" 10, :my-key false}]
+      (is (= {:hello "world", :age 10, :my-key false} (to-clojure clojure-map)))))
+
   (testing "conversion from a java.util.HashMap to a clojure hashmap"
     (let [java-map (new java.util.HashMap)]
       (is (= (type {}) (type (to-clojure java-map))))))

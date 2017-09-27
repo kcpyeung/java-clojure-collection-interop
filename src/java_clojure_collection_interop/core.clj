@@ -3,17 +3,14 @@
 (declare to-clojure-list)
 (declare to-java-list)
 
-(def is-java-map? (partial instance? java.util.AbstractMap))
-(def is-java-list? (partial instance? java.util.AbstractList))
-
-(def is-clojure-map? (partial map?))
-(defn is-clojure-list-or-vector? [thing] (or (list? thing) (vector? thing)))
+(def is-map? (partial instance? java.util.Map))
+(defn is-list? [thing] (or (vector? thing) (instance? java.util.List thing)))
 
 (defn- to-clojure-map [java-map]
   (letfn [(process-map-item [[k v :as kv]]
             (cond
-              (is-java-map? v) [k (to-clojure-map v)]
-              (is-java-list? v) [k (to-clojure-list v)]
+              (is-map? v) [k (to-clojure-map v)]
+              (is-list? v) [k (to-clojure-list v)]
               :default kv))
           (to-kvs [java-map]
             (->> java-map
@@ -27,8 +24,8 @@
 (defn- to-clojure-list [java-list]
   (letfn [(process-list-item [item]
             (cond
-              (is-java-list? item) (to-clojure-list item)
-              (is-java-map? item) (to-clojure-map item)
+              (is-list? item) (to-clojure-list item)
+              (is-map? item) (to-clojure-map item)
               :default item))]
     (->> java-list
       (map process-list-item)
@@ -36,15 +33,15 @@
 
 (defn to-clojure [thing]
   (cond
-    (is-java-map? thing) (to-clojure-map thing)
-    (is-java-list? thing) (to-clojure-list thing)
+    (is-map? thing) (to-clojure-map thing)
+    (is-list? thing) (to-clojure-list thing)
     :default thing))
 
 (defn- to-java-map [clojure-map]
   (letfn [(process-map-item [[k v]]
             (cond
-              (is-clojure-map? v) [(name k) (to-java-map v)]
-              (is-clojure-list-or-vector? v) [(name k) (to-java-list v)]
+              (is-map? v) [(name k) (to-java-map v)]
+              (is-list? v) [(name k) (to-java-list v)]
               :default [(name k) v]))]
     (->> clojure-map
          seq
@@ -55,8 +52,8 @@
 (defn- to-java-list [clojure-list]
   (letfn [(process-list-item [item]
             (cond
-              (is-clojure-list-or-vector? item) (to-java-list item)
-              (is-clojure-map? item) (to-java-map item)
+              (is-list? item) (to-java-list item)
+              (is-map? item) (to-java-map item)
               :default item))]
     (->> clojure-list
          (map process-list-item)
@@ -64,6 +61,6 @@
 
 (defn to-java [thing]
   (cond
-    (is-clojure-map? thing) (to-java-map thing)
-    (is-clojure-list-or-vector? thing) (to-java-list thing)
+    (is-map? thing) (to-java-map thing)
+    (is-list? thing) (to-java-list thing)
     :default thing))
