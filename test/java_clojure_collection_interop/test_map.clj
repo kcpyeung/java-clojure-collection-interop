@@ -41,6 +41,10 @@
     (let [clojure-map {"numberOfLegs" 4, "doesItMeow" true, "whatIsYourName" "smellyCat"}]
       (is (= {:number-of-legs 4, :does-it-meow true, :what-is-your-name "smellyCat"} (to-clojure clojure-map)))))
 
+  (testing "nested map keys become kebabs too"
+    (let [clojure-map {"whatIsYourName" "smellyCat", "favourites" {"yummyStuff" "fish", "playThing" "yarn"}}]
+      (is (= {:what-is-your-name "smellyCat" :favourites {:yummy-stuff "fish", :play-thing "yarn"}} (to-clojure clojure-map)))))
+
   (testing "keys are converted to keywords inside clojure.lang.PersistentHashMap"
     (let [clojure-map {"hello" "world", "age" 10, :my-key false}]
       (is (= {:hello "world", :age 10, :my-key false} (to-clojure clojure-map)))))
