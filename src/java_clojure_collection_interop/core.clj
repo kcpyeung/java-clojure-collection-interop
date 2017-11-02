@@ -1,4 +1,5 @@
-(ns java-clojure-collection-interop.core)
+(ns java-clojure-collection-interop.core
+  (:require [clojure.string :as s]))
 
 (declare to-clojure-list)
 (declare to-java-list)
@@ -12,10 +13,12 @@
               (is-map? v) [k (to-clojure-map v)]
               (is-list? v) [k (to-clojure-list v)]
               :default kv))
+          (to-kebab-case [s]
+            (if (string? s) (s/join (map (fn [c] (if (Character/isUpperCase c) (str "-" (s/lower-case c)) c)) s)) s))
           (to-kvs [java-map]
             (->> java-map
               keys
-              (map (fn [k] [(keyword k) (.get java-map k)]))))]
+              (map (fn [k] [(keyword (to-kebab-case k)) (.get java-map k)]))))]
     (->> java-map
       to-kvs
       (map process-map-item)
