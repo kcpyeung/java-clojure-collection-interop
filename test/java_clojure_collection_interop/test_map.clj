@@ -3,6 +3,14 @@
             [java-clojure-collection-interop.core :refer :all]))
 
 (deftest clojure-to-java
+  (testing "clojure kebab case keywords are converted to java camel case"
+    (let [clojure-map {:number-of-legs 4, :does-it-meow true, :what-is-your-name "smellyCat"}]
+      (is (= {"numberOfLegs" 4, "doesItMeow" true, "whatIsYourName" "smellyCat"} (to-java clojure-map)))))
+
+  (testing "nested kebab becomes camel too"
+    (let [clojure-map {:what-is-your-name "smellyCat" :favourites {:to-eat "fish", :to-sleep-on "expensive carpets"}}]
+      (is (= {"whatIsYourName" "smellyCat", "favourites" {"toEat" "fish", "toSleepOn" "expensive carpets"}} (to-java clojure-map)))))
+
   (testing "conversion from a clojure hashmap to a java.util.HashMap"
     (let [clojure-map {}]
       (is (instance? java.util.Map (to-java clojure-map)))))
@@ -34,7 +42,7 @@
       (is (= 1 (.get things 0)))
       (is (= 3 (.get things 3)))
       (is (instance? java.util.HashMap inner))
-      (is (= "hiding" (.get inner "i-am"))))))
+      (is (= "hiding" (.get inner "iAm"))))))
 
 (deftest java-to-clojure
   (testing "java naming convention in keys is converted to clojure"

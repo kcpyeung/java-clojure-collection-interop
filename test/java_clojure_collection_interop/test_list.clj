@@ -32,7 +32,7 @@
       (is (instance? java.util.ArrayList v))
       (is (instance? java.util.Map m))
       (is (= "world" (.get m "hello")))
-      (let [il (.get m "my-list")
+      (let [il (.get m "myList")
             im (.get il 0)]
         (is (instance? java.util.ArrayList il))
         (is (instance? java.util.Map im))

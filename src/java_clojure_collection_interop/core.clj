@@ -41,11 +41,14 @@
     :default thing))
 
 (defn- to-java-map [clojure-map]
-  (letfn [(process-map-item [[k v]]
+  (letfn [(to-camel-case [s]
+            (->> (reduce (fn [acc c] (if (not= "-" (peek acc)) (conj acc (s/lower-case c)) (replace {"-" (s/upper-case c)} acc))) [] s)
+                 (apply str)))
+          (process-map-item [[k v]]
             (cond
-              (is-map? v) [(name k) (to-java-map v)]
-              (is-list? v) [(name k) (to-java-list v)]
-              :default [(name k) v]))]
+              (is-map? v) [(to-camel-case (name k)) (to-java-map v)]
+              (is-list? v) [(to-camel-case (name k)) (to-java-list v)]
+              :default [(to-camel-case (name k)) v]))]
     (->> clojure-map
          seq
          (map process-map-item)
